@@ -1,26 +1,11 @@
 from flask import Flask
 from flask_restful import Api, Resource, reqparse
 import random
+from letters import Letters as letters
 
 app = Flask(__name__)
 api = Api(app)
 
-letters = [{
-    "id": 0,
-    "name": "Maria",
-    "letter": "Dear St. Claus, I would like a bike this year. Thanks!"
-},
-{
-    "id": 1,
-    "name": "Fernanda",
-    "letter": "Dear St. Claus, I would like a doll this year. Thanks!"
-},
-{
-    "id": 2,
-    "name": "Carla",
-    "letter": "Dear St. Claus, I would like a computer this year. Thanks!"
-},
-]
 
 class Letter(Resource):
 
@@ -34,18 +19,16 @@ class Letter(Resource):
         return "letter not found", 404
 
     
-    def post(self, id):
+    def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument("name")
         parser.add_argument("letter")
         params = parser.parse_args()
 
-        for letter in letters:
-            if(id == letter["id"]):
-                return f"letter with id {id} already exists", 400
+        automatic_id = len(letters)
 
         letter = {
-            "id": int(id),
+            "id": automatic_id,
             "name": params["name"],
             "letter": params["letter"]
         }
