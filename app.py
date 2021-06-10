@@ -27,6 +27,9 @@ class Letter(Resource):
 
         automatic_id = len(letters)
 
+        if params['name'] == None or params['letter'] == None:
+            return "params name and letter are mandatory!", 422
+
         letter = {
             "id": automatic_id,
             "name": params["name"],
@@ -45,9 +48,12 @@ class Letter(Resource):
 
         for letter in letters:
             if(id == letter["id"]):
-                letter["name"] = params["name"]
-                letter["letter"] = params["letter"]
+                if params["name"]:
+                    letter["name"] = params["name"]
+                if params["letter"]:
+                    letter["letter"] = params["letter"]
                 return letter, 200
+
         
         letter = {
             "id": id,
@@ -60,9 +66,12 @@ class Letter(Resource):
 
 
     def delete(self, id):
-        global letters
-        letters = [letter for letter in letters if letter["id"] != id]
-        return f"Letter with id {id} is deleted.", 200
+        for letter in letters:
+            if letter["id"] == id:
+                del(letters[id])
+                return f"Letter with id {id} was deleted.", 200
+
+        return "id does not exist", 404
 
 
 api.add_resource(Letter, "/letters", "/letters/", "/letters/<int:id>")
